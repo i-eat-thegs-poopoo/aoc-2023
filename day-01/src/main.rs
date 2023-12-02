@@ -1,5 +1,3 @@
-use std::fs;
-
 fn main() {
     let input = utils::read_input();
     one(&input);
