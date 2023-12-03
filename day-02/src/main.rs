@@ -1,5 +1,3 @@
-use std::str::Chars;
-
 mod one;
 mod two;
 
@@ -10,51 +8,28 @@ fn main() {
 }
 
 fn parse_line(line: &str) -> (u32, Vec<(u32, u32, u32)>) {
-    let mut chars = line.chars();
+    let mut parser = utils::Parser::new(line);
 
-    chars.by_ref().take(5).for_each(drop);
-    let id = parse_int(&mut chars);
-
-    chars.next(); // space
-
+    parser.expect("Game ");
+    let id = parser.int();
+    parser.expect(": ");
+    
     let mut sets = Vec::new();
-
-    loop {
-        let mut set = (0, 0, 0);
-
-        loop {
-            let count = parse_int(&mut chars);
-            let color = match chars.next().unwrap() {
-                'r' => &mut set.0,
-                'g' => &mut set.1,
-                'b' => &mut set.2,
+    parser.sep_by("; ", |parser| {
+        let mut colors = (0, 0, 0);
+        parser.sep_by(", ", |parser| {
+            let count = parser.int();
+            parser.expect(" ");
+            
+            match parser.ident() {
+                "red" => colors.0 = count,
+                "green" => colors.1 = count,
+                "blue" => colors.2 = count,
                 _ => panic!(),
-            };
-
-            *color = count;
-
-            match chars.find(|&c| c == ',' || c == ';') {
-                Some(',') => {
-                    chars.next(); // space
-                }
-                Some(';') => break,
-                _ => {
-                    sets.push(set);
-                    return (id, sets);
-                }
             }
-        }
+        });
+        sets.push(colors);
+    });
 
-        sets.push(set);
-        chars.next(); // space
-    }
-}
-
-fn parse_int(chars: &mut Chars) -> u32 {
-    chars
-        .by_ref()
-        .take_while(char::is_ascii_digit)
-        .collect::<String>()
-        .parse()
-        .unwrap()
+    (id, sets)
 }
