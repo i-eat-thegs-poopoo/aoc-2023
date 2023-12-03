@@ -13,14 +13,14 @@ fn parse_line(line: &str) -> (u32, Vec<(u32, u32, u32)>) {
     parser.expect("Game ");
     let id = parser.int();
     parser.expect(": ");
-    
+
     let mut sets = Vec::new();
     parser.sep_by("; ", |parser| {
         let mut colors = (0, 0, 0);
         parser.sep_by(", ", |parser| {
             let count = parser.int();
             parser.expect(" ");
-            
+
             match parser.ident() {
                 "red" => colors.0 = count,
                 "green" => colors.1 = count,
