@@ -41,7 +41,7 @@ fn parse_nums_symbols(input: &str) -> (Vec<Number>, HashSet<(usize, usize)>) {
                     let start = *start;
                     let mut end = start;
                     buffer.clear();
-                    
+
                     while let Some((x, c)) = chars.next_if(|(_, c)| c.is_ascii_digit()) {
                         end = x;
                         buffer.push(c);

@@ -58,7 +58,7 @@ impl<'a> Parser<'a> {
         &self.src[start..end]
     }
 
-    pub fn int(&mut self) -> u32 {
+    pub fn int(&mut self) -> u64 {
         self.str_while(char::is_ascii_digit).parse().unwrap()
     }
 
