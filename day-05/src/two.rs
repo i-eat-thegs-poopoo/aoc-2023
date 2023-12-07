@@ -48,9 +48,7 @@ pub fn run(input: &str) {
                     result_buffer.push((vmin + offset, smax + offset));
                     untouched_buffer.push((smax + 1, vmax));
                 } else {
-                    // range is identical to src; 1 resultant range
-                    assert_eq!((vmin, vmax), (smin, smax));
-                    result_buffer.push((vmin + offset, vmax + offset));
+                    unreachable!();
                 }
             }
 

@@ -1,6 +1,6 @@
 use super::parse_line;
 
-const MAX: (u32, u32, u32) = (12, 13, 14);
+const MAX: (u64, u64, u64) = (12, 13, 14);
 
 pub fn run(input: &str) {
     let mut sum = 0;

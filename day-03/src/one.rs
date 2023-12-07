@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
 struct Number {
-    value: u32,
+    value: u64,
     x: (usize, usize),
     y: usize,
 }

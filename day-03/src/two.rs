@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 struct Number {
-    value: u32,
+    value: u64,
     x: (usize, usize),
     y: usize,
 }
@@ -30,7 +30,7 @@ pub fn run(input: &str) {
     println!("Two: {sum}");
 }
 
-fn parse_nums_gears(input: &str) -> (Vec<Number>, HashMap<(usize, usize), Vec<u32>>) {
+fn parse_nums_gears(input: &str) -> (Vec<Number>, HashMap<(usize, usize), Vec<u64>>) {
     let mut buffer = String::new();
 
     let mut numbers = Vec::new();

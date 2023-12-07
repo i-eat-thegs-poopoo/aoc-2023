@@ -5,7 +5,7 @@ fn main() {
 }
 
 fn one(input: &str) {
-    let mut sum = 0_u32;
+    let mut sum = 0_u64;
 
     for line in input.lines() {
         let mut iter = line
@@ -24,7 +24,7 @@ fn one(input: &str) {
 }
 
 fn two(input: &str) {
-    const PATTERNS: [(&str, u32); 10] = [
+    const PATTERNS: [(&str, u64); 10] = [
         ("zero", 0),
         ("one", 1),
         ("two", 2),
@@ -37,7 +37,7 @@ fn two(input: &str) {
         ("nine", 9),
     ];
 
-    let mut sum = 0_u32;
+    let mut sum = 0_u64;
 
     for line in input.lines() {
         let patterns = PATTERNS
@@ -60,8 +60,8 @@ fn two(input: &str) {
 
 fn find(
     mut input: impl Iterator<Item = char> + Clone,
-    patterns: &[(impl Iterator<Item = char> + Clone, u32)],
-) -> u32 {
+    patterns: &[(impl Iterator<Item = char> + Clone, u64)],
+) -> u64 {
     loop {
         let digit = input.clone().next().and_then(|c| c.to_digit(10));
 

@@ -7,7 +7,7 @@ fn main() {
     two::run(&input);
 }
 
-fn parse_line(line: &str) -> (u32, Vec<(u32, u32, u32)>) {
+fn parse_line(line: &str) -> (u64, Vec<(u64, u64, u64)>) {
     let mut parser = utils::Parser::new(line);
 
     parser.expect("Game ");
