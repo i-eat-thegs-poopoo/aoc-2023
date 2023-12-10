@@ -82,7 +82,7 @@ fn compare(lhs: &Hand, rhs: &Hand, buffer: &mut Vec<(char, u64)>) -> Ordering {
     match l_val.cmp(&r_val) {
         Ordering::Equal => {
             static VALUES: [char; 13] = [
-                'J','2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
+                'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
             ];
 
             for (l, r) in lhs.0.iter().zip(rhs.0.iter()) {
@@ -118,7 +118,7 @@ fn identify(hand: &Hand, buffer: &mut Vec<(char, u64)>) -> u64 {
     }
 
     match buffer.as_slice() {
-        [_]| [] => 7, // Five of a kind
+        [_] | [] => 7, // Five of a kind
         [a, b] => match (a.1, b.1) {
             (1, _) | (_, 1) => 6, // Four of a kind
             (2, _) | (_, 2) => 5, // Full house
