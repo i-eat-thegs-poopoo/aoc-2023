@@ -18,8 +18,10 @@ struct Path<'a> {
 }
 
 pub fn run(input: &str) {
+    let time = std::time::Instant::now();
     let step = calc(input);
     println!("Two: {step}");
+    println!("{:?}", time.elapsed());
 }
 
 fn calc(input: &str) -> u64 {
