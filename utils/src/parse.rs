@@ -66,6 +66,10 @@ impl<'a> Parser<'a> {
         self.str_while(char::is_ascii_alphabetic)
     }
 
+    pub fn alphanumeric(&mut self) -> &'a str {
+        self.str_while(char::is_ascii_alphanumeric)
+    }
+
     /// Expects at least one item.
     pub fn sep_by(&mut self, sep: &str, mut callback: impl FnMut(&mut Self)) {
         callback(self);
