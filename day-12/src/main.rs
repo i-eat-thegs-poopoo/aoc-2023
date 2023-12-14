@@ -1,30 +1,24 @@
-use std::iter;
-
 fn main() {
     let (one, two) = utils::setup();
     one(|input| {
-        let records = parse(input);
-
-        records
+        parse(input)
             .into_iter()
-            .map(|rec| find_unknowns(rec.springs.into_iter(), rec.groups.iter().copied()))
+            .map(|rec| find_unknowns(&rec.springs, &rec.groups))
             .sum::<usize>()
     });
 
     two(|input| {
-        let records = parse(input);
-
-        records
+        parse(input)
             .into_iter()
             .map(|rec| {
-                let mut springs = iter::repeat(
-                        iter::once(Spring::Unknown)
-                            .chain(rec.springs.iter().copied())
-                    )
-                        .take(5)
-                        .flatten();
-                springs.next();
-                find_unknowns(springs, iter::repeat(rec.groups.iter().copied()).take(5).flatten())
+                let mut springs = rec.springs;
+                springs.push(Spring::Unknown);
+                let mut springs = springs.repeat(5);
+                springs.pop();
+
+                let groups = rec.groups.repeat(5);
+
+                find_unknowns(&springs, &groups)
             })
             .sum::<usize>()
     });
@@ -77,52 +71,62 @@ fn parse(input: &str) -> Vec<Record> {
     records
 }
 
-fn find_unknowns(
-    springs: impl Iterator<Item = Spring>,
-    groups: impl Iterator<Item = u64> + Clone,
-) -> usize {
-    let mut combos = vec![(groups, None)];
-    let mut buffer = Vec::new();
+struct State {
+    next_spring: usize,
+    next_group: usize,
+    remaining: Option<u64>,
+}
 
-    for spring in springs {
-        buffer.clear();
+fn find_unknowns(springs: &[Spring], groups: &[u64]) -> usize {
+    let mut combos = 0;
+    let mut state_stack = vec![State {
+        next_spring: 0,
+        next_group: 0,
+        remaining: None,
+    }];
 
-        for (mut groups, remaining) in combos.drain(..) {
-            let remaining = match spring {
-                Spring::Operational => match remaining {
+    'outer: while let Some(mut state) = state_stack.pop() {
+        for spring in state.next_spring..springs.len() {
+            state.remaining = match springs[spring] {
+                Spring::Operational => match state.remaining {
                     Some(0) | None => None,
-                    Some(_) => continue,
+                    Some(_) => continue 'outer,
                 },
-                Spring::Damaged => match remaining.or_else(|| groups.next()) {
-                    Some(0) | None => continue,
+                Spring::Damaged => match state.remaining {
+                    Some(0) => continue 'outer,
                     Some(len) => Some(len - 1),
+                    None => match groups.get(state.next_group) {
+                        Some(len) => {
+                            state.next_group += 1;
+                            Some(len - 1)
+                        }
+                        None => continue 'outer,
+                    },
                 },
-                Spring::Unknown => match remaining {
+                Spring::Unknown => match state.remaining {
                     Some(0) => None,
                     Some(len) => Some(len - 1),
                     None => {
-                        // Assume operational
-                        buffer.push((groups.clone(), None));
-
                         // Assume damaged
-                        if let Some(len) = groups.next() {
-                            buffer.push((groups, Some(len - 1)));
+                        if let Some(len) = groups.get(state.next_group) {
+                            state_stack.push(State {
+                                next_spring: spring + 1,
+                                next_group: state.next_group + 1,
+                                remaining: Some(len - 1),
+                            });
                         }
 
-                        continue;
+                        // Assume operational
+                        None
                     }
                 },
             };
-
-            buffer.push((groups, remaining));
         }
 
-        combos.extend(buffer.drain(..));
+        if state.next_group == groups.len() && state.remaining.unwrap_or(0) == 0 {
+            combos += 1;
+        }
     }
 
     combos
-        .into_iter()
-        .map(|(mut groups, remaining)| (groups.next(), remaining))
-        .filter(|(next, remaining)| next.is_none() && remaining.unwrap_or(0) == 0)
-        .count()
 }
