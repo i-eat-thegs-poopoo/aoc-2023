@@ -4,7 +4,7 @@ fn main() {
     two(|input| run(input, 1_000_000));
 }
 
-pub fn run(input: &str, expand: u64) -> u64 {
+fn run(input: &str, expand: u64) -> u64 {
     let (galaxies, empty_rows, empty_cols) = parse(input);
     let mut sum = 0;
 
