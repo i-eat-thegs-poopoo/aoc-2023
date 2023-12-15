@@ -1,18 +1,12 @@
 use std::iter;
 
+mod one;
+mod two;
+
 fn main() {
     let (one, two) = utils::setup();
-    one(|input| {
-        let terrains = parse(input);
-        let mut sum = 0;
-
-        for terrain in terrains {
-            sum += find_sym(&terrain);
-        }
-
-        sum
-    });
-    two(|input| 123);
+    one(|input| find_symmetry(input, one::find_axis_symmetry));
+    two(|input| find_symmetry(input, two::find_axis_fixable));
 }
 
 type Terrain = Vec<Vec<Tile>>;
@@ -57,51 +51,46 @@ fn parse(input: &str) -> Vec<Terrain> {
     }
 }
 
-fn find_sym(terrain: &Terrain) -> usize {
-    let horiz = find_axis_symmetry(
-        0..terrain.len(),
-        |curr, terrain, row| terrain[row].get(curr).copied(),
-        terrain,
-        terrain[0].len() - 1,
-    );
-
-    if let Some(pt) = horiz {
-        return pt;
-    }
-
-    let vert = find_axis_symmetry(
-        0..terrain[0].len(),
-        |curr, terrain, col| terrain.get(curr).map(|row| row[col]),
-        terrain,
-        terrain.len() - 1,
-    );
-
-    if let Some(pt) = vert {
-        return pt * 100;
-    }
-
-    panic!()
+struct AxisParams<'a> {
+    lines: usize,
+    max: usize,
+    get_tile: fn(usize, &Terrain, usize) -> Option<Tile>,
+    terrain: &'a Terrain,
 }
 
-fn find_axis_symmetry(
-    lines: impl Iterator<Item = usize>,
-    get_tile: fn(usize, &Terrain, usize) -> Option<Tile>,
-    terrain: &Terrain,
-    max: usize,
-) -> Option<usize> {
-    let mut symmetry_pts = None::<Vec<usize>>;
+fn find_symmetry(input: &str, find_terrain_symmetry: fn(AxisParams) -> Option<usize>) -> usize {
+    let terrains = parse(input);
+    let mut sum = 0;
 
-    for line in lines {
-        let pts = find_line_symmetry(get_tile, terrain, line);
+    for terrain in terrains {
+        let horiz = find_terrain_symmetry(AxisParams {
+            lines: terrain.len(),
+            max: terrain[0].len(),
+            get_tile: |curr, terrain, row| terrain[row].get(curr).copied(),
+            terrain: &terrain,
+        });
 
-        if let Some(ref mut symmetry_pts) = symmetry_pts {
-            symmetry_pts.retain(|pt| pts.contains(pt) && *pt < max);
-        } else {
-            symmetry_pts = Some(pts);
+        if let Some(pt) = horiz {
+            sum += pt;
+            continue;
         }
+
+        let vert = find_terrain_symmetry(AxisParams {
+            lines: terrain[0].len(),
+            max: terrain.len(),
+            get_tile: |curr, terrain, col| terrain.get(curr).map(|row| row[col]),
+            terrain: &terrain,
+        });
+
+        if let Some(pt) = vert {
+            sum += pt * 100;
+            continue;
+        }
+
+        panic!()
     }
 
-    symmetry_pts.unwrap().get(0).map(|pt| pt + 1)
+    sum
 }
 
 fn find_line_symmetry(
@@ -129,11 +118,11 @@ fn find_line_symmetry(
             })
             .all(|(a, b)| *a == b);
 
+        curr += 1;
+
         if is_symmetric {
             symmetry_pts.push(curr);
         }
-
-        curr += 1;
     }
 
     symmetry_pts
