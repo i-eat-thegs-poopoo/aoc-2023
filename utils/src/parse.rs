@@ -1,3 +1,4 @@
+use crate::grid::Grid;
 use std::{iter::Peekable, str::CharIndices};
 
 pub struct Parser<'a> {
@@ -11,6 +12,14 @@ impl<'a> Parser<'a> {
             src,
             inner: src.char_indices().peekable(),
         }
+    }
+
+    pub fn next(&mut self) -> Option<char> {
+        self.inner.next().map(|(_, c)| c)
+    }
+
+    pub fn peek(&mut self) -> Option<char> {
+        self.inner.peek().map(|(_, c)| *c)
     }
 
     fn match_pattern(input: &mut impl Iterator<Item = (usize, char)>, pattern: &str) -> bool {
@@ -84,5 +93,31 @@ impl<'a> Parser<'a> {
             self.inner = input;
             callback(self);
         }
+    }
+
+    pub fn grid<T>(&mut self, mut parse_tile: impl FnMut(char) -> T) -> Grid<T> {
+        let mut tiles = Vec::new();
+        let mut curr_row = Vec::new();
+
+        while let Some(char) = self.peek() {
+            if char == '\n' {
+                if curr_row.is_empty() {
+                    break;
+                } else {
+                    tiles.push(curr_row);
+                    curr_row = Vec::new();
+                }
+            } else {
+                curr_row.push(parse_tile(char));
+            }
+
+            self.next();
+        }
+
+        if !curr_row.is_empty() {
+            tiles.push(curr_row);
+        }
+
+        Grid { tiles }
     }
 }

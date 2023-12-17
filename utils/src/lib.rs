@@ -1,6 +1,7 @@
 use std::{env, fmt::Display, fs, rc::Rc, time};
 
-mod parse;
+pub mod grid;
+pub mod parse;
 
 pub use parse::*;
 
