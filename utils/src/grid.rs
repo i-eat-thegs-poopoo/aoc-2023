@@ -33,4 +33,13 @@ impl<T> Grid<T> {
 
         self.pos(row, col)
     }
+
+    pub fn shift_wraparound(&self, Pos { row, col }: Pos, (dr, dc): (isize, isize)) -> Pos {
+        let (rows, cols) = (self.tiles.len(), self.tiles[0].len());
+
+        let row = (row + rows).checked_add_signed(dr).unwrap() % rows;
+        let col = (col + cols).checked_add_signed(dc).unwrap() % cols;
+
+        self.pos(row, col).unwrap()
+    }
 }

@@ -115,5 +115,54 @@ dependencies = [
 ]
 
 [[package]]
+name = "day-17"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-18"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-19"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-20"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-21"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-22"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
+name = "day-23"
+version = "0.1.0"
+dependencies = [
+ "utils",
+]
+
+[[package]]
 name = "utils"
 version = "0.1.0"

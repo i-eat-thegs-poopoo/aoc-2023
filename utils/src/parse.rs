@@ -1,4 +1,4 @@
-use crate::grid::Grid;
+use crate::grid::*;
 use std::{iter::Peekable, str::CharIndices};
 
 pub struct Parser<'a> {
@@ -95,6 +95,19 @@ impl<'a> Parser<'a> {
         }
     }
 
+    /// Expects at least one item.
+    pub fn sep_by_until(&mut self, sep: &str, until: &str, mut callback: impl FnMut(&mut Self)) {
+        callback(self);
+
+        loop {
+            if self.consume_match(until) || !self.consume_match(sep) {
+                return;
+            }
+
+            callback(self);
+        }
+    }
+
     pub fn grid<T>(&mut self, mut parse_tile: impl FnMut(char) -> T) -> Grid<T> {
         let mut tiles = Vec::new();
         let mut curr_row = Vec::new();
@@ -109,6 +122,41 @@ impl<'a> Parser<'a> {
                 }
             } else {
                 curr_row.push(parse_tile(char));
+            }
+
+            self.next();
+        }
+
+        if !curr_row.is_empty() {
+            tiles.push(curr_row);
+        }
+
+        Grid { tiles }
+    }
+
+    pub fn grid_with_pos<T>(
+        &mut self,
+        mut parse_tile: impl FnMut(char, (usize, usize)) -> T,
+    ) -> Grid<T> {
+        let mut tiles = Vec::new();
+        let mut curr_row = Vec::new();
+
+        let mut row = 0;
+        let mut col = 0;
+
+        while let Some(char) = self.peek() {
+            if char == '\n' {
+                if curr_row.is_empty() {
+                    break;
+                } else {
+                    tiles.push(curr_row);
+                    curr_row = Vec::new();
+                    row = 0;
+                    col += 1;
+                }
+            } else {
+                curr_row.push(parse_tile(char, (row, col)));
+                row += 1;
             }
 
             self.next();
