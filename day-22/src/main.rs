@@ -168,24 +168,24 @@ fn find_unremovable(grid: &Grid) -> usize {
 fn find_disintegrated(grid: &Grid) -> usize {
     fn disintegrate(id: usize, grid: &Grid, disinted: &mut HashSet<usize>) -> usize {
         disinted.insert(id);
-    
+
         let mut disint_count = 0;
-    
+
         for &dep_id in &grid.ints[id].supports {
             if disinted.contains(&dep_id) {
                 continue;
             }
-    
+
             let disint = grid.ints[dep_id]
                 .depends
                 .iter()
                 .all(|sup_id| disinted.contains(sup_id));
-    
+
             if disint {
                 disint_count += 1 + disintegrate(dep_id, grid, disinted);
             }
         }
-    
+
         disint_count
     }
 
