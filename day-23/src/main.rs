@@ -168,12 +168,7 @@ fn hike(graph: &Graph) -> u64 {
     recurse(graph.start, seen, graph, &mut cache)
 }
 
-fn recurse(
-    curr: usize,
-    seen: u64,
-    graph: &Graph,
-    cache: &mut HashMap<(usize, u64), u64>,
-) -> u64 {
+fn recurse(curr: usize, seen: u64, graph: &Graph, cache: &mut HashMap<(usize, u64), u64>) -> u64 {
     if curr == graph.dest {
         return 0;
     }

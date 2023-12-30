@@ -71,6 +71,17 @@ impl<'a> Parser<'a> {
         self.str_while(char::is_ascii_digit).parse().unwrap()
     }
 
+    pub fn signed_int(&mut self) -> i64 {
+        let neg = self.consume_match("-");
+        let num = self.str_while(char::is_ascii_digit).parse::<i64>().unwrap();
+
+        if neg {
+            -num
+        } else {
+            num
+        }
+    }
+
     pub fn ident(&mut self) -> &'a str {
         self.str_while(char::is_ascii_alphabetic)
     }
