@@ -58,17 +58,17 @@ pub fn find_rock(hailstones: &[([i128; 3], [i128; 3])]) -> i128 {
     let [px, py, vx, _] = {
         let mut coeffs = [[Fraction::int(0); 4]; 4];
         let mut consts = [Fraction::int(0); 4];
-    
+
         for (i, window) in hailstones.windows(2).take(4).enumerate() {
             let &[[ax, ay, _], [bx, by, _]] = window else {
                 panic!();
             };
-    
+
             let (lhs, rhs) = make_xy_eq(ax, ay, bx, by);
             coeffs[i] = lhs;
             consts[i] = rhs;
         }
-    
+
         gauss_elim(&mut coeffs, &mut consts)
     };
 
@@ -76,12 +76,12 @@ pub fn find_rock(hailstones: &[([i128; 3], [i128; 3])]) -> i128 {
         let mut coeffs = [[Fraction::int(0); 2]; 2];
         let mut consts = [Fraction::int(0); 2];
         let x = Axis { v: vx, p: px };
-    
+
         for (i, window) in hailstones.windows(2).take(2).enumerate() {
             let &[[ax, _, az], [bx, _, bz]] = window else {
                 panic!();
             };
-    
+
             let (lhs, rhs) = make_z_eq(ax, az, bx, bz, x);
             coeffs[i] = lhs;
             consts[i] = rhs;
